@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Api</title>
+    
+    <!-- Mobile views -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+</head>
+<body>
+
+    <!-- Jquery script -->
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+
+    var api_key = 'YB0MY3VMHyllzPqEf5alVj5bUvGpvDVi';
+
+    // request articles
+      $.ajax({
+            url: "http://data.test.bbc.co.uk/bbcrd-juicer/articles?facets[]=http%3A%2F%2Fdbpedia.org%2Fresource%2FJonathan_Evans&apikey=" + api_key,
+            type : "GET",
+            dataType: "json",
+            success: function(data){
+                  console.log(data);
+                  
+            } // closing success
+
+      }); //closing ajax
+
+    </script>
+
+</body>
+</html>
