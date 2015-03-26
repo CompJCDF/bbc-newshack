@@ -1,5 +1,5 @@
 var api_key = 'YB0MY3VMHyllzPqEf5alVj5bUvGpvDVi';
-
+var candidates_data = [];
 var width;
 
 var margin = {top: 20, right: 30, bottom: 30, left: 80},
@@ -61,19 +61,24 @@ function stopped() {
 
 var mouseover = function(d) {
 
-	console.log('hello1');
-
 	d3.selectAll('#tooltip .articles')
 	    .remove();
 
-	// console.log(candidates_data.get(d.id));
-
 	var candidates = [];
+
+	var curr = 0;
+
+	var addItem = function(item) {
+		console.log('hello3');
+		d3.selectAll('#tooltip')
+			.append('a')
+			.attr('class', 'articles')
+			.attr('href', item.url)
+			.text(item.title)
+    }
 
 	// request articles
 	candidates_data.get(d.id).forEach(function(d){
-
-		console.log('hello2');
 		
 		first = d.name.split(' ')[0];
 		last = d.name.split(' ')[1];
@@ -83,20 +88,8 @@ var mouseover = function(d) {
 	      	url: "http://data.test.bbc.co.uk/bbcrd-juicer/articles?q=%22" + first + "%20" + last + "%22&apikey=" + api_key,
 	      	type : "GET",
 	      	dataType: "json",
-	      	success: function(data){
-	      		// console.log(data);
-	        	console.log(data.hits);
-	        	candidates.push(data.hits);
-	            // console.log(candidates[0]);
-
-	            for (item in candidates[0]) {
-	            	console.log('hello3');
-	            	d3.selectAll('#tooltip')
-	            		.append('a')
-	            		.attr('class', 'articles')
-	            		.attr('href', candidates[0][item].url)
-	            		.text(candidates[0][item].title)
-	            } //closing for
+	      	success: function(data) {
+	            data.hits.forEach(addItem);
 	      	} // closing success
 	    }); //closing ajax
 	}) //closing candidates forEach
