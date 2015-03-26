@@ -19,7 +19,7 @@
 
     // request articles
       $.ajax({
-            url: "http://data.test.bbc.co.uk/bbcrd-juicer/articles?facets[]=http%3A%2F%2Fdbpedia.org%2Fresource%2FJonathan_Evans&apikey=" + api_key,
+            url: "http://data.bbc.co.uk/bbcrd-juicer/articles.json?text=Mari_Williams&apikey=" + api_key,
             type : "GET",
             dataType: "json",
             success: function(data){
