@@ -27,7 +27,7 @@ h1 {
 
 #tooltip {
   position: absolute;
-  width: 230px;
+  width: 250px;
   height: auto;
   padding: 10px;
   background-color: white;
@@ -47,10 +47,8 @@ h1 {
   line-height: 13.8px;
 }
 
-#tooltip .candidates_description {
-  padding: 3px 0px;
-}
-
-#tooltip .candidates {
-  padding: 3px 0px;
+#tooltip .articles {
+  display: block;
+  padding: 5px 0px;
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

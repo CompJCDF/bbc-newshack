@@ -59,50 +59,51 @@ function stopped() {
 	}
 };
 
-function updateData(articles) {
-	console.log("updated");
-};
-
 var mouseover = function(d) {
+
+	console.log('hello1');
+
+	d3.selectAll('#tooltip .articles')
+	    .remove();
+
+	// console.log(candidates_data.get(d.id));
 
 	var candidates = [];
 
 	// request articles
-	$.ajax({
-	      url: "http://data.test.bbc.co.uk/bbcrd-juicer/articles?q=%22Mari%20Williams%22&apikey=" + api_key,
-	      type : "GET",
-	      dataType: "json",
-	      success: function(data){
-	      		d3.selectAll('#tooltip .candidates')
-	      			.remove();
-	            console.log(data);
-	            console.log(data.hits);
-	            candidates.push(data.hits);
-	            console.log(candidates[0]);
-	            for (item in candidates[0]) {
-	            	d3.selectAll('#tooltip')
-	            		.append('p')
-	            		.attr('class', 'candidates')
-	            		.text(candidates[0][item].title);
-	            }
-	      } // closing success
-	}); //closing ajax
+	candidates_data.get(d.id).forEach(function(d){
 
-	// candidates_data.get(d.id).forEach(function(d){
-	// 	if (d.email != '' && d.twitter_username != '') { 
-	// 		candidates.push(d['name'] + ' (' + d['party'] + ')' + ' - ' + d['email'] + ' / @' + d['twitter_username']);
-	// 	} else if (d.email != '') {
-	// 		candidates.push(d['name'] + ' (' + d['party'] + ')' + ' - ' + d['email'])
-	// 	} else if (d.twitter_username != '') {
-	// 		candidates.push(d['name'] + ' (' + d['party'] + ')' + ' - ' + d['twitter_username'])
-	// 	} else {
-	// 		candidates.push(d['name'] + ' (' + d['party'] + ')');
-	// 	}
- //    });
+		console.log('hello2');
+		
+		first = d.name.split(' ')[0];
+		last = d.name.split(' ')[1];
+
+		$.ajax({
+
+	      	url: "http://data.test.bbc.co.uk/bbcrd-juicer/articles?q=%22" + first + "%20" + last + "%22&apikey=" + api_key,
+	      	type : "GET",
+	      	dataType: "json",
+	      	success: function(data){
+	      		// console.log(data);
+	        	console.log(data.hits);
+	        	candidates.push(data.hits);
+	            // console.log(candidates[0]);
+
+	            for (item in candidates[0]) {
+	            	console.log('hello3');
+	            	d3.selectAll('#tooltip')
+	            		.append('a')
+	            		.attr('class', 'articles')
+	            		.attr('href', candidates[0][item].url)
+	            		.text(candidates[0][item].title)
+	            } //closing for
+	      	} // closing success
+	    }); //closing ajax
+	}) //closing candidates forEach
 
   	d3.select("#tooltip")
-    	.style("left", "20px")
-    	.style("top", "60px");
+    	.style("left", "10px")
+    	.style("top", "50px");
   	d3.select("#tooltip #constituency")
     	.text(cons_data.get(d.id)[0].constituency);
   	d3.select("#tooltip #mp")
@@ -116,7 +117,7 @@ var mouseover = function(d) {
 var mouseout = function() {
   d3.select("#tooltip").classed("hidden", true);
 
-  d3.selectAll('#tooltip .candidates')
+  d3.selectAll('#tooltip .articles')
   	.remove();
 };
 
