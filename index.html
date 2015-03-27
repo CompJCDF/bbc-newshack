@@ -13,12 +13,12 @@
 
     <div id='cssmenu'>
     <ul>
-       <li class='active'><a href='navbar.html'>Home</a></li>
+       <li class='active'><a href='index.html'>Home</a></li>
        <li><a href="team.html">Team</a></li>
 
        <div class="light">
-       <form>
-       <span><input type="text" class="search rounded" placeholder="Search..."></span>
+       <form id="search-mpi">
+       <span><input type="text" id="search-postcode" placeholder="Insert postcode..."></span>
     </form>
     </div>
 
@@ -26,7 +26,10 @@
     </div>
  
 
-    <h1>CANDIDates<span id='subtitle'><br>2015 UK GENERAL ELECTION CANDIDATES AND CONTACT INFORMATION</span></h1>
+    <h1>CANDID<style> h1 {color: #47c9af}</style>ates<style> h1 {color: black}></style></h1>
+
+    <span id='subtitle'>
+    <h2>| 2015 UK GENERAL ELECTION CANDIDATES AND CONTACT INFORMATION | </span></h2>
 
     <div id="vis">
         
@@ -47,5 +50,34 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
     <script src="maps.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+    // To request and get data in Java Script Console:
+
+    var search_mpi = function() {
+        $.ajax({
+            url: "http://mapit.mysociety.org/postcode/SW1A1AA",
+                type : "GET",
+                dataType : "json",
+                success: function(response) {
+                        console.log(response);
+                },
+                error: function(xhr, status, error){
+                        console.log(status);
+                        console.log(error);
+                }
+        });
+    };
+
+    $(document).ready(function(){
+        $('#search-mpi').on("submit", function(e){ // To use "Enter" to search
+            e.preventDefault();
+            var input = $('#search-postcode').val();
+            console.log(input);
+            search_mpi(input);
+            });
+        });
+
+    </script>
 </body>
 </html>
