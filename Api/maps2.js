@@ -83,53 +83,7 @@ function stopped() {
 	}
 };
 
-function secondDraw(boudaries) {
-
-	console.log(boundaries);
-
-	console.log(cons_data);
-
-	console.log(wpCons);
-
-	var geoJSON = {
-	    "type": "FeatureCollection",
-	    "features":[
-
-	    ]
-	}
-
-	boundaries.forEach(function(boundary){
-			geoJSON.features.push({
-            "type":"Feature",
-            "geometry": boundary,
-            "id": $.each( cons_data, function( key, value ) {
-  							if (value.mapitid === $.inArray(wpCons)) {
-  					    	   return key
-  					    	 }
-  					     })
-        })
-	})
-
-	console.log(geoJSON);
-
-	var areas = svg.selectAll(".area")
-	    .data(geoJSON.features)
-
-	areas
-		.enter()
-		.append("path")
-		.attr("class", "area")
-		.attr("fill", function(d){return get_cons_colour(d.id);})
-		.attr("id", function(d){return d.id;})
-		.attr("d", path)
-		.on("click", clicked);
-
-	svg.call(zoom);
-}
-
 function draw(boundaries) {
-
-	console.log(boundaries);
 
 	projection
 		.scale(1)
@@ -163,6 +117,43 @@ function init() {
 	var margin = {top: 20, right: 30, bottom: 30, left: 80},
 		height = 600 - margin.top - margin.bottom;
 
+	var lon = -3.1833;
+	var lat = 51.4833;
+
+	var getBoundaries = function(id) {
+		$.ajax({
+		    url: "http://mapit.mysociety.org/area/" + id + ".geojson",
+		    type : "GET",
+		    dataType: "json",
+		    success: function(data) {
+		    	console.log(data);
+		    } // closing success
+		}); //closing ajax
+	}
+
+	$.ajax({
+	    url: "http://mapit.mysociety.org/point/4326/" + lon + "," + lat ,
+	    type : "GET",
+	    dataType: "json",
+	    success: function(data) {
+	    	$.each(data, function(key, value){
+	    		if (value.type_name === "Unitary Authority") {
+	    	       localAuth = value.id
+	    	       console.log(localAuth);
+	    	     }
+	    	})
+	    	$.ajax({
+	    	    url: "http://mapit.mysociety.org/area/" + localAuth + "/coverlaps?type=WMC",
+	    	    type : "GET",
+	    	    dataType: "json",
+	    	    success: function(data) {
+	    	    	wpCons = (Object.keys(data));
+	    	    	wpCons.forEach(getBoundaries);
+	    	    } // closing success
+	    	}); //closing ajax
+	    } // closing success
+	}); //closing ajax
+
 	svg = d3.select("#vis")
 			.append("svg")
 			.attr("width", width)
@@ -177,62 +168,22 @@ function init() {
 	path = d3.geo.path()
 		.projection(projection);
 
-	var lon = -3.1833;
-	var lat = 51.4833;
+	queue()
+		.defer(d3.json, "wpc.json")
+		.defer(d3.csv, "data.csv")
+		.defer(d3.csv, "candidates.csv")
+		.await(function(error, wpc, data, candidates){
+			
+			cons_data = d3.nest()
+				.key(function(d){return d.pcon13cd;})
+				.map(data, d3.map);
 
-	boundaries = [];
+			candidates_data = d3.nest()
+				.key(function(d){return d.gss_code;})
+				.map(candidates, d3.map);
 
-	var getBoundaries = function(id) {
-		$.ajax({
-		    url: "http://mapit.mysociety.org/area/" + id + ".geojson",
-		    type : "GET",
-		    dataType: "json",
-		    success: function(data) {
-		    	boundaries.push(data);
-		    } // closing success
-		}); //closing ajax
-	}
-
-	$.ajax({
-	    url: "http://mapit.mysociety.org/point/4326/" + lon + "," + lat ,
-	    type : "GET",
-	    dataType: "json",
-	    success: function(data) {
-	    	$.each(data, function(key, value){
-	    		if (value.type_name === "Unitary Authority") {
-	    	       localAuth = value.id
-	    	     }
-	    	})
-	    	$.ajax({
-	    	    url: "http://mapit.mysociety.org/area/" + localAuth + "/coverlaps?type=WMC",
-	    	    type : "GET",
-	    	    dataType: "json",
-	    	    success: function(data) {
-	    	    	wpCons = (Object.keys(data));
-	    	    	wpCons.forEach(getBoundaries);
-	    	    } // closing success
-	    	}); //closing ajax
-	    	queue()
-	    		.defer(d3.json, "wpc.json")
-	    		.defer(d3.csv, "data.csv")
-	    		.defer(d3.csv, "candidates.csv")
-	    		.await(function(error, wpc, data, candidates){
-	    			
-	    			cons_data = d3.nest()
-	    				.key(function(d){return d.pcon13cd;})
-	    				.map(data, d3.map);
-
-	    			candidates_data = d3.nest()
-	    				.key(function(d){return d.gss_code;})
-	    				.map(candidates, d3.map);
-
-	    			console.log(boundaries);
-
-	    			draw(wpc);
-	    		});
-	    } // closing success
-	}); //closing ajax
-
+			draw(wpc);
+		});
 };
 
 init();
