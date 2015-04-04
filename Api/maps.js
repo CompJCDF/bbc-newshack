@@ -89,6 +89,9 @@ function stopped() {
 
 function draw(boudaries) {
 
+	console.log(boundaries);
+	console.log(wpCons);
+
 	var geoJSON = {
 	    "type": "FeatureCollection",
 	    "features":[
@@ -193,8 +196,13 @@ function init() {
 	path = d3.geo.path()
 		.projection(projection);
 
+	// CARDIFF
 	var lon = -3.1833;
 	var lat = 51.4833;
+
+	// SWANSEA
+	// var lon = -3.9500;
+	// var lat = 51.6167;
 
 	boundaries = [];
 
@@ -242,7 +250,7 @@ function init() {
 	    				.key(function(d){return d.gss_code;})
 	    				.map(candidates, d3.map);
 
-	    			drawUK(wpc);
+	    			draw(boundaries);
 	    		});
 	    } // closing success
 	}); //closing ajax
