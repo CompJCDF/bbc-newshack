@@ -13,6 +13,10 @@ var cons_data;
 var active = d3.select(null);
 
 var get_cons_colour = function(id) {
+	return id;
+}
+
+var get_uk_colour = function(id) {
 	return cons_data.get(id)[0].colour;
 }
 
@@ -83,13 +87,7 @@ function stopped() {
 	}
 };
 
-function secondDraw(boudaries) {
-
-	console.log(boundaries);
-
-	console.log(cons_data);
-
-	console.log(wpCons);
+function draw(boudaries) {
 
 	var geoJSON = {
 	    "type": "FeatureCollection",
@@ -98,28 +96,48 @@ function secondDraw(boudaries) {
 	    ]
 	}
 
+	var desiredId = [];
+	var desiredColour = [];
+
+	$.each(cons_data, function(key, value) {
+  							if ($.inArray(value[0].mapitid, wpCons) != -1) {
+  					    	   	desiredId.push(key)
+  					    	   	desiredColour.push(this[0].colour)
+  					    	}
+  					    })
+
+	i = 0
+
+
 	boundaries.forEach(function(boundary){
 			geoJSON.features.push({
             "type":"Feature",
             "geometry": boundary,
-            "id": $.each( cons_data, function( key, value ) {
-  							if (value.mapitid === $.inArray(wpCons)) {
-  					    	   return key
-  					    	 }
-  					     })
+            "id": desiredId[i],
+            "colour": desiredColour[i]
         })
+			i++
 	})
 
-	console.log(geoJSON);
+	projection
+		.scale(1)
+		.translate([0,0]);
+	var b = path.bounds(geoJSON);
+	var s = 0.95 / Math.max((b[1][0]-b[0][0])/width, (b[1][1]-b[0][1])/height);
+	var t = [(width - s * (b[1][0] + b[0][0]))/2, (height - s * (b[1][1] + b[0][1]))/2];
 
-	var areas = svg.selectAll(".area")
+	projection
+		.scale(s)
+		.translate(t);
+
+	var areas = g.selectAll(".area")
 	    .data(geoJSON.features)
 
 	areas
 		.enter()
 		.append("path")
 		.attr("class", "area")
-		.attr("fill", function(d){return get_cons_colour(d.id);})
+		.attr("fill", function(d){return get_cons_colour(d.colour);})
 		.attr("id", function(d){return d.id;})
 		.attr("d", path)
 		.on("click", clicked);
@@ -127,9 +145,7 @@ function secondDraw(boudaries) {
 	svg.call(zoom);
 }
 
-function draw(boundaries) {
-
-	console.log(boundaries);
+function drawUK(boundaries) {
 
 	projection
 		.scale(1)
@@ -142,14 +158,14 @@ function draw(boundaries) {
 		.scale(s)
 		.translate(t);
 
-	var areas = g.selectAll(".area")
+	var areas = g.selectAll(".areaUK")
 		.data(topojson.feature(boundaries, boundaries.objects["wpc"]).features);
 
 	areas
 		.enter()
 		.append("path")
-		.attr("class", "area")
-		.attr("fill", function(d){return get_cons_colour(d.id);})
+		.attr("class", "areaUK")
+		.attr("fill", function(d){return get_uk_colour(d.id);})
 		.attr("id", function(d){return d.id;})
 		.attr("d", path)
 		.on("click", clicked);
@@ -226,9 +242,7 @@ function init() {
 	    				.key(function(d){return d.gss_code;})
 	    				.map(candidates, d3.map);
 
-	    			console.log(boundaries);
-
-	    			draw(wpc);
+	    			drawUK(wpc);
 	    		});
 	    } // closing success
 	}); //closing ajax

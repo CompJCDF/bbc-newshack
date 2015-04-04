@@ -30,6 +30,11 @@ h2 {
 }
 
 .area {
+  stroke-width: 500px;
+  stroke: #000;
+}
+
+.areaUK {
 	stroke-width: 0.05px;
 	stroke: #000;
 }

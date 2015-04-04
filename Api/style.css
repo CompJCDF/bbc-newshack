@@ -21,8 +21,13 @@ h1 {
 }
 
 .area {
-	stroke-width: 0.05px;
-	stroke: #000;
+  stroke-width: 0.75px;
+  stroke: #000;
+}
+
+.areaUK {
+  stroke-width: 0.05px;
+  stroke: #000;
 }
 
 #tooltip {
